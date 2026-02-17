@@ -43,7 +43,6 @@ import RankingsPage from "./components/Education/Rankings/RankingsPage";
 import AdmissionsDiscoveryPage from "./components/Education/Admissions/AdmissionsDiscoveryPage";
 import EntranceDiscoveryPage from "./components/Education/Entrance/EntranceDiscoveryPage";
 import CampusForumPage from "./components/Education/Forum/CampusForumPage";
-import ForumNavbar from "./components/Education/Forum/ForumNavbar";
 import ScholarshipMainPage from "./components/Education/Scholarships/ScholarshipMainPage";
 import ScholarshipHubDetailsPage from "./components/Education/Scholarships/ScholarshipHubDetailsPage";
 import ScholarshipCategoryPage from "./components/Education/Scholarships/ScholarshipCategoryPage";
@@ -281,22 +280,22 @@ const App: React.FC = () => {
     <div
       className={`min-h-screen font-sans selection:bg-blue-500 selection:text-white overflow-x-hidden ${currentView !== "home" ? "bg-slate-50" : "bg-white"}`}
     >
-      {!isAuthView &&
-        currentView !== "onboarding" &&
-        (isJobView ? (
-          <JobNavbar onNavigate={navigateTo} user={userData} />
-        ) : currentView === "campusForum" ? (
-          <ForumNavbar onNavigate={navigateTo} user={userData} />
-        ) : isEducationView ? (
-          <EducationNavbar onNavigate={navigateTo} user={userData} />
-        ) : (
-          <Navbar
-            onNavigate={navigateTo}
-            currentView={currentView as any}
-            user={userData}
-            onLogout={handleLogout}
-          />
-        ))}
+      {!isAuthView && currentView !== "onboarding" && (
+        <>
+          {isJobView ? (
+            <JobNavbar onNavigate={navigateTo} user={user} />
+          ) : isEducationView ? (
+            <EducationNavbar onNavigate={navigateTo} user={user} />
+          ) : (
+            <Navbar
+              onNavigate={navigateTo}
+              currentView={currentView as any}
+              user={user}
+              onLogout={handleLogout}
+            />
+          )}
+        </>
+      )}
 
       {currentView === "home" && (
         <HomeView onNavigate={navigateTo} user={userData} />
@@ -437,7 +436,10 @@ const App: React.FC = () => {
 
       {currentView === "onboarding" && (
         <div className="min-h-[100dvh] flex items-center justify-center bg-slate-50 p-4">
-          <OnboardingFlow onComplete={() => navigateTo("home")} />
+          <OnboardingFlow
+            initialRole={user?.role as any}
+            onComplete={() => navigateTo("home")}
+          />
         </div>
       )}
 

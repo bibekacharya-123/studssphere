@@ -1,27 +1,39 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { useAuth } from '../../services/AuthContext';
 import { apiService } from '../../services/api';
 
 interface OnboardingFlowProps {
   onComplete: () => void;
+  initialRole?: Role;
 }
 
-type Role = 'student' | 'job_seeker';
-type Phase = 'role' | 'welcome' | 'decision' | 'flow' | 'success';
+type Role = "student" | "job_seeker";
+type Phase = "role" | "welcome" | "decision" | "flow" | "success";
 
 const studentData = {
   welcome: {
     title: "Welcome to StudSphere",
     subtext: "Your academic journey, reimagined. Let's tailor your experience.",
-    cta: "Get Started"
+    cta: "Get Started",
   },
   decision: {
     question: "What brings you here?",
     options: [
-      { id: 'studying', label: 'I am currently studying', sub: 'Manage my academics', icon: 'fa-user-graduate', targetFlow: 'flowA' },
-      { id: 'searching', label: 'Searching for a college', sub: 'Explore institutions', icon: 'fa-magnifying-glass', targetFlow: 'flowB' }
-    ]
+      {
+        id: "studying",
+        label: "I am currently studying",
+        sub: "Manage my academics",
+        icon: "fa-user-graduate",
+        targetFlow: "flowA",
+      },
+      {
+        id: "searching",
+        label: "Searching for a college",
+        sub: "Explore institutions",
+        icon: "fa-magnifying-glass",
+        targetFlow: "flowB",
+      },
+    ],
   },
   flowA: [
     { 
@@ -99,15 +111,28 @@ const studentData = {
 const jobSeekerData = {
   welcome: {
     title: "Welcome to StudSphere",
-    subtext: "Accelerate your career. Let's find the perfect opportunity for you.",
-    cta: "Start Profile"
+    subtext:
+      "Accelerate your career. Let's find the perfect opportunity for you.",
+    cta: "Start Profile",
   },
   decision: {
     question: "Which describes you?",
     options: [
-      { id: 'fresher', label: 'I am a Fresher', sub: 'Looking for first job/internship', icon: 'fa-seedling', targetFlow: 'flowFresher' },
-      { id: 'experienced', label: 'I am Experienced', sub: 'Looking for better opportunities', icon: 'fa-briefcase', targetFlow: 'flowExperienced' }
-    ]
+      {
+        id: "fresher",
+        label: "I am a Fresher",
+        sub: "Looking for first job/internship",
+        icon: "fa-seedling",
+        targetFlow: "flowFresher",
+      },
+      {
+        id: "experienced",
+        label: "I am Experienced",
+        sub: "Looking for better opportunities",
+        icon: "fa-briefcase",
+        targetFlow: "flowExperienced",
+      },
+    ],
   },
   flowFresher: [
     { 
@@ -179,12 +204,12 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
   const handleRoleSelect = (selectedRole: Role) => {
     triggerAnimation(() => {
       setRole(selectedRole);
-      setPhase('welcome');
+      setPhase("welcome");
     });
   };
 
   const handlePhaseWelcome = () => {
-    triggerAnimation(() => setPhase('decision'));
+    triggerAnimation(() => setPhase("decision"));
   };
 
   const handleDecision = (flow: string) => {
@@ -192,54 +217,66 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
     triggerAnimation(() => {
       setFlowKey(flow);
       setActiveFlow(data);
-      setPhase('flow');
+      setPhase("flow");
       setStepIndex(0);
     });
   };
 
   const handleNextStep = () => {
     if (stepIndex < activeFlow.length - 1) {
-      triggerAnimation(() => setStepIndex(prev => prev + 1));
+      triggerAnimation(() => setStepIndex((prev) => prev + 1));
     } else {
-      triggerAnimation(() => setPhase('success'));
+      triggerAnimation(() => setPhase("success"));
     }
   };
 
   const goBack = () => {
     triggerAnimation(() => {
-      if (phase === 'welcome') setPhase('role');
-      else if (phase === 'decision') setPhase('welcome');
-      else if (phase === 'flow') {
-        if (stepIndex === 0) setPhase('decision');
-        else setStepIndex(prev => prev - 1);
-      } else if (phase === 'success') setPhase('flow');
+      if (phase === "welcome") setPhase("role");
+      else if (phase === "decision") setPhase("welcome");
+      else if (phase === "flow") {
+        if (stepIndex === 0) setPhase("decision");
+        else setStepIndex((prev) => prev - 1);
+      } else if (phase === "success") setPhase("flow");
     });
   };
 
-  const progress = phase === 'role' ? 5 : 
-                 phase === 'welcome' ? 10 : 
-                 phase === 'decision' ? 20 : 
-                 phase === 'flow' ? 20 + ((stepIndex + 1) / activeFlow.length * 80) : 100;
+  const progress =
+    phase === "role"
+      ? 5
+      : phase === "welcome"
+        ? 10
+        : phase === "decision"
+          ? 20
+          : phase === "flow"
+            ? 20 + ((stepIndex + 1) / activeFlow.length) * 80
+            : 100;
 
-  const accentColor = role === 'student' ? 'indigo' : 'emerald';
-  const accentHex = role === 'student' ? '#6366f1' : '#10b981';
+  const accentColor = role === "student" ? "indigo" : "emerald";
+  const accentHex = role === "student" ? "#6366f1" : "#10b981";
 
   return (
     <div className="w-full max-w-[420px] bg-white rounded-[24px] shadow-[0_20px_60px_-10px_rgba(0,0,0,0.08),0_8px_20px_-5px_rgba(0,0,0,0.02)] border border-slate-100 relative min-h-[480px] flex flex-col overflow-hidden font-jakarta">
-      
       {/* Top Nav */}
       <div className="h-14 flex items-center justify-between px-6 pt-2">
-        <button 
-          onClick={goBack} 
-          className={`w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-all ${phase === 'role' ? 'opacity-0 pointer-events-none' : ''}`}
+        <button
+          onClick={goBack}
+          className={`w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-all ${phase === "role" ? "opacity-0 pointer-events-none" : ""}`}
         >
           <i className="fa-solid fa-chevron-left text-xs"></i>
         </button>
         <div className="flex items-center gap-1.5 opacity-60">
-          <div className={`w-2 h-2 rounded-full ${role === 'job_seeker' ? 'bg-emerald-500' : 'bg-indigo-600'}`}></div>
-          <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-slate-900">StudSphere</span>
+          <div
+            className={`w-2 h-2 rounded-full ${role === "job_seeker" ? "bg-emerald-500" : "bg-indigo-600"}`}
+          ></div>
+          <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-slate-900">
+            StudSphere
+          </span>
         </div>
-        <button onClick={() => window.location.reload()} className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all">
+        <button
+          onClick={() => window.location.reload()}
+          className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all"
+        >
           <i className="fa-solid fa-rotate-right text-xs"></i>
         </button>
       </div>
@@ -247,60 +284,99 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
       {/* Progress Bar */}
       <div className="px-6 mt-2 mb-2">
         <div className="w-full h-1 bg-slate-100 rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500 ease-out" 
-            style={{ width: `${progress}%`, background: `linear-gradient(90deg, ${accentHex} 0%, #A855F7 100%)` }}
+          <div
+            className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500 ease-out"
+            style={{
+              width: `${progress}%`,
+              background: `linear-gradient(90deg, ${accentHex} 0%, #A855F7 100%)`,
+            }}
           ></div>
         </div>
       </div>
 
-      <div className={`flex-1 px-6 pb-8 flex flex-col justify-center transition-all duration-300 ${isAnimating ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}`}>
-        {phase === 'role' && (
+      <div
+        className={`flex-1 px-6 pb-8 flex flex-col justify-center transition-all duration-300 ${isAnimating ? "opacity-0 translate-y-2" : "opacity-100 translate-y-0"}`}
+      >
+        {phase === "role" && (
           <>
             <div className="text-center mb-8 pt-4">
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-lg bg-slate-900 text-white mb-5 shadow-lg">
                 <i className="fa-solid fa-layer-group text-xl"></i>
               </div>
-              <h1 className="text-2xl font-bold text-slate-900 mb-2 tracking-tight">Select Your Role</h1>
-              <p className="text-slate-500 text-sm font-medium">To personalize your experience.</p>
+              <h1 className="text-2xl font-bold text-slate-900 mb-2 tracking-tight">
+                Select Your Role
+              </h1>
+              <p className="text-slate-500 text-sm font-medium">
+                To personalize your experience.
+              </p>
             </div>
             <div className="space-y-3">
-              <RoleButton icon="fa-graduation-cap" title="I am a Student" sub="Looking for colleges & guidance" color="indigo" onClick={() => handleRoleSelect('student')} />
-              <RoleButton icon="fa-briefcase" title="I am a Job Seeker" sub="Looking for jobs & internships" color="emerald" onClick={() => handleRoleSelect('job_seeker')} />
+              <RoleButton
+                icon="fa-graduation-cap"
+                title="I am a Student"
+                sub="Looking for colleges & guidance"
+                color="indigo"
+                onClick={() => handleRoleSelect("student")}
+              />
+              <RoleButton
+                icon="fa-briefcase"
+                title="I am a Job Seeker"
+                sub="Looking for jobs & internships"
+                color="emerald"
+                onClick={() => handleRoleSelect("job_seeker")}
+              />
             </div>
           </>
         )}
 
-        {phase === 'welcome' && role && (
+        {phase === "welcome" && role && (
           <div className="flex flex-col items-center text-center pt-6">
-            <div className={`w-16 h-16 rounded-2xl bg-gradient-to-tr ${role === 'student' ? 'from-indigo-600 to-purple-500' : 'from-emerald-500 to-teal-600'} flex items-center justify-center text-white shadow-xl mb-6`}>
-              <i className={`fa-solid ${role === 'student' ? 'fa-hand-sparkles' : 'fa-rocket'} text-2xl`}></i>
+            <div
+              className={`w-16 h-16 rounded-2xl bg-gradient-to-tr ${role === "student" ? "from-indigo-600 to-purple-500" : "from-emerald-500 to-teal-600"} flex items-center justify-center text-white shadow-xl mb-6`}
+            >
+              <i
+                className={`fa-solid ${role === "student" ? "fa-hand-sparkles" : "fa-rocket"} text-2xl`}
+              ></i>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 mb-3 tracking-tight">
-              {role === 'student' ? studentData.welcome.title : jobSeekerData.welcome.title}
+              {role === "student"
+                ? studentData.welcome.title
+                : jobSeekerData.welcome.title}
             </h2>
             <p className="text-slate-500 text-sm leading-relaxed mb-8 max-w-[280px] font-medium">
-              {role === 'student' ? studentData.welcome.subtext : jobSeekerData.welcome.subtext}
+              {role === "student"
+                ? studentData.welcome.subtext
+                : jobSeekerData.welcome.subtext}
             </p>
-            <button onClick={handlePhaseWelcome} className="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-lg text-sm flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95 group">
-              {role === 'student' ? studentData.welcome.cta : jobSeekerData.welcome.cta} 
+            <button
+              onClick={handlePhaseWelcome}
+              className="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-lg text-sm flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95 group"
+            >
+              {role === "student"
+                ? studentData.welcome.cta
+                : jobSeekerData.welcome.cta}
               <i className="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform text-xs"></i>
             </button>
           </div>
         )}
 
-        {phase === 'decision' && role && (
+        {phase === "decision" && role && (
           <>
             <div className="mb-6">
               <span className={`text-[10px] font-bold ${accentColor === 'indigo' ? 'text-indigo-600' : 'text-emerald-600'} tracking-widest uppercase mb-1 block`}>Step 01</span>
               <h3 className="text-xl font-bold text-slate-900">
-                {role === 'student' ? studentData.decision.question : jobSeekerData.decision.question}
+                {role === "student"
+                  ? studentData.decision.question
+                  : jobSeekerData.decision.question}
               </h3>
             </div>
             <div className="space-y-3">
-              {(role === 'student' ? studentData.decision.options : jobSeekerData.decision.options).map((opt: any) => (
-                <button 
-                  key={opt.id} 
+              {(role === "student"
+                ? studentData.decision.options
+                : jobSeekerData.decision.options
+              ).map((opt: any) => (
+                <button
+                  key={opt.id}
                   onClick={() => handleDecision(opt.targetFlow)}
                   className="w-full text-left p-4 rounded-xl border border-slate-100 bg-white hover:shadow-md transition-all flex items-center group"
                   style={{ borderColor: 'rgb(226, 232, 240)' }}
@@ -309,8 +385,12 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
                     <i className={`fa-solid ${opt.icon} text-lg`}></i>
                   </div>
                   <div className="flex-1">
-                    <span className="block text-base font-bold text-slate-900">{opt.label}</span>
-                    <span className="text-xs font-medium text-slate-500">{opt.sub}</span>
+                    <span className="block text-base font-bold text-slate-900">
+                      {opt.label}
+                    </span>
+                    <span className="text-xs font-medium text-slate-500">
+                      {opt.sub}
+                    </span>
                   </div>
                   <i className="fa-solid fa-chevron-right text-xs text-slate-300 group-hover:text-indigo-600"></i>
                 </button>
@@ -319,15 +399,19 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
           </>
         )}
 
-        {phase === 'flow' && activeFlow.length > 0 && (
+        {phase === "flow" && activeFlow.length > 0 && (
           <div className="flex flex-col h-full">
             <div className="mb-6">
               <div className="flex items-center justify-between mb-1.5">
                  <span className={`text-[10px] font-bold ${accentColor === 'indigo' ? 'text-indigo-600' : 'text-emerald-600'} tracking-widest uppercase`}>Question 0{stepIndex + 1}</span>
                  <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">of 0{activeFlow.length}</span>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-1.5">{activeFlow[stepIndex].question}</h3>
-              <p className="text-slate-500 text-sm font-medium">{activeFlow[stepIndex].subtitle || 'Select the best option.'}</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-1.5">
+                {activeFlow[stepIndex].question}
+              </h3>
+              <p className="text-slate-500 text-sm font-medium">
+                {activeFlow[stepIndex].subtitle || "Select the best option."}
+              </p>
             </div>
 
             <div className="space-y-2.5 flex-grow">
@@ -361,8 +445,8 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
               {activeFlow[stepIndex].type === 'text' && (
                 <div className="relative group mt-2">
                   <div className="relative bg-white rounded-xl">
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       placeholder={activeFlow[stepIndex].placeholder}
                       value={answers[activeFlow[stepIndex].id] || ''}
                       onChange={(e) => setAnswers(prev => ({ ...prev, [activeFlow[stepIndex].id]: e.target.value }))}
@@ -376,9 +460,13 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
             </div>
 
             <div className="mt-8">
-              <button 
+              <button
                 onClick={handleNextStep}
-                disabled={!answers[activeFlow[stepIndex].id] || (activeFlow[stepIndex].type === 'multi' && answers[activeFlow[stepIndex].id].length === 0)}
+                disabled={
+                  !answers[activeFlow[stepIndex].id] ||
+                  (activeFlow[stepIndex].type === "multi" &&
+                    answers[activeFlow[stepIndex].id].length === 0)
+                }
                 className="w-full py-3.5 bg-slate-900 disabled:bg-slate-100 disabled:text-slate-400 text-white rounded-xl font-semibold text-sm shadow-md transition-all active:scale-95"
               >
                 Continue
@@ -387,7 +475,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
           </div>
         )}
 
-        {phase === 'success' && (
+        {phase === "success" && (
           <div className="text-center py-8">
             {error && (
               <div className="p-3 bg-red-50 border border-red-200 rounded-lg mb-4">
@@ -395,13 +483,19 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
               </div>
             )}
             <div className="relative inline-block mb-6">
-              <div className={`relative w-20 h-20 rounded-full ${role === 'student' ? 'bg-emerald-500 shadow-emerald-200' : 'bg-blue-600 shadow-blue-200'} text-white flex items-center justify-center shadow-lg`}>
+              <div
+                className={`relative w-20 h-20 rounded-full ${role === "student" ? "bg-emerald-500 shadow-emerald-200" : "bg-blue-600 shadow-blue-200"} text-white flex items-center justify-center shadow-lg`}
+              >
                 <i className="fa-solid fa-check text-3xl"></i>
               </div>
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 mb-2">You’re All Set!</h2>
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">
+              You’re All Set!
+            </h2>
             <p className="text-slate-500 text-sm mb-8 max-w-[240px] mx-auto font-medium">
-              {role === 'student' ? "We've personalized your StudSphere dashboard based on your goals." : "We've curated a list of jobs and internships just for you."}
+              {role === "student"
+                ? "We've personalized your StudSphere dashboard based on your goals."
+                : "We've curated a list of jobs and internships just for you."}
             </p>
             <button 
               onClick={async () => {
@@ -438,7 +532,12 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
                 'Go to Dashboard'
               )}
             </button>
-            <button onClick={() => window.location.reload()} className="text-slate-400 text-sm font-medium hover:text-slate-600 transition-colors">Start Over</button>
+            <button
+              onClick={() => window.location.reload()}
+              className="text-slate-400 text-sm font-medium hover:text-slate-600 transition-colors"
+            >
+              Start Over
+            </button>
           </div>
         )}
       </div>
@@ -472,6 +571,7 @@ const OptionItem: React.FC<{ icon?: string, label: string, selected: boolean, mu
 
   return (
     <label
+    <label
       onClick={onClick}
       className={`cursor-pointer w-full flex items-center p-3.5 rounded-xl border group relative transition-all active:scale-[0.98] border-slate-100 bg-white hover:border-slate-300 hover:bg-slate-50`}
       style={selected ? { backgroundColor: selectedBg, borderColor: selectedBorder } : {}}
@@ -481,8 +581,12 @@ const OptionItem: React.FC<{ icon?: string, label: string, selected: boolean, mu
           <i className={`fa-solid ${icon}`}></i>
         </div>
       )}
-      <span className={`font-semibold text-sm flex-1 transition-colors ${selected ? 'text-slate-900' : 'text-slate-700'}`}>{label}</span>
-      
+      <span
+        className={`font-semibold text-sm flex-1 transition-colors ${selected ? "text-slate-900" : "text-slate-700"}`}
+      >
+        {label}
+      </span>
+
       {multi ? (
         <div className="w-5 h-5 rounded border flex items-center justify-center text-white text-[10px] transition-all" style={{ backgroundColor: selected ? selectedBorder : '#ffffff', borderColor: selected ? selectedBorder : '#d1d5db' }}>
           <i className={`fa-solid fa-check transition-opacity ${selected ? 'opacity-100' : 'opacity-0'}`}></i>

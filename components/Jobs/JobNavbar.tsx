@@ -23,7 +23,7 @@ const JobNavbar: React.FC<JobNavbarProps> = ({ onNavigate, user }) => {
               S
             </div>
             <span className="font-bold text-xl tracking-tight text-gray-900">
-              Studsphere <span className="text-primary-600">Education</span>
+              Studsphere <span className="text-primary-600">Jobs</span>
             </span>
           </div>
 
