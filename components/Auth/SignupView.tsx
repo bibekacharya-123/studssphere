@@ -185,18 +185,8 @@ const SignupView: React.FC<SignupViewProps> = ({
             className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-50 focus:border-blue-500 transition-all outline-none font-medium text-slate-900 disabled:bg-slate-100"
             value={formData.fullName} 
             onChange={handleInputChange}
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-1.5">
-            Full Name
-          </label>
-          <input
-            type="text"
-            id="fullName"
-            placeholder="Jagdis Dhami"
-            required
-            className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-50 focus:border-blue-500 transition-all outline-none font-medium text-slate-900"
-            value={formData.fullName}
-            onChange={handleInputChange}
           />
+        
         </div>
 
         <div>

@@ -571,7 +571,7 @@ const OptionItem: React.FC<{ icon?: string, label: string, selected: boolean, mu
 
   return (
     <label
-    <label
+    
       onClick={onClick}
       className={`cursor-pointer w-full flex items-center p-3.5 rounded-xl border group relative transition-all active:scale-[0.98] border-slate-100 bg-white hover:border-slate-300 hover:bg-slate-50`}
       style={selected ? { backgroundColor: selectedBg, borderColor: selectedBorder } : {}}
