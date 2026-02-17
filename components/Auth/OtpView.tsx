@@ -1,14 +1,17 @@
-
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from "react";
 
 interface OtpViewProps {
   identifier: string;
-  type?: 'phone' | 'email';
+  type?: "phone" | "email";
   onVerified: () => void;
 }
 
-const OtpView: React.FC<OtpViewProps> = ({ identifier, type = 'phone', onVerified }) => {
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+const OtpView: React.FC<OtpViewProps> = ({
+  identifier,
+  type = "phone",
+  onVerified,
+}) => {
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -28,15 +31,15 @@ const OtpView: React.FC<OtpViewProps> = ({ identifier, type = 'phone', onVerifie
   };
 
   const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputsRef.current[index - 1]?.focus();
     }
   };
 
   const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
-    if (otp.some(v => !v)) return;
-    
+    if (otp.some((v) => !v)) return;
+
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
@@ -53,12 +56,12 @@ const OtpView: React.FC<OtpViewProps> = ({ identifier, type = 'phone', onVerifie
 
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-slate-900 mb-2">
-          {type === 'phone' ? 'Verify Phone' : 'Verify Email'}
+          {type === "phone" ? "Verify Phone" : "Verify Email"}
         </h1>
         <p className="text-slate-500 font-medium">
-          We've sent a 6-digit code to{' '}
+          We've sent a 6-digit code to{" "}
           <strong className="text-slate-900">
-            {type === 'phone' 
+            {type === "phone"
               ? `+977 ${identifier.slice(0, 3)}...${identifier.slice(-3)}`
               : identifier}
           </strong>
@@ -71,28 +74,40 @@ const OtpView: React.FC<OtpViewProps> = ({ identifier, type = 'phone', onVerifie
             <input
               key={idx}
               // Fix: Wrapped assignment in braces to return void and satisfy Ref type
-              ref={el => { inputsRef.current[idx] = el; }}
+              ref={(el) => {
+                inputsRef.current[idx] = el;
+              }}
               type="text"
               maxLength={1}
               value={digit}
-              onChange={e => handleChange(e.target.value, idx)}
-              onKeyDown={e => handleKeyDown(e, idx)}
+              onChange={(e) => handleChange(e.target.value, idx)}
+              onKeyDown={(e) => handleKeyDown(e, idx)}
               className="w-12 h-14 bg-slate-50 border border-slate-200 rounded-xl text-center text-2xl font-bold focus:ring-4 focus:ring-blue-50 focus:border-blue-500 outline-none transition-all"
             />
           ))}
         </div>
 
-        <button 
-          type="submit" 
-          disabled={loading || otp.some(v => !v)}
+        <button
+          type="submit"
+          disabled={loading || otp.some((v) => !v)}
           className="w-full py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-200 text-white font-bold rounded-xl shadow-xl shadow-blue-500/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
         >
-          {loading ? <i className="fa-solid fa-spinner animate-spin"></i> : 'Verify & Continue'}
+          {loading ? (
+            <i className="fa-solid fa-spinner animate-spin"></i>
+          ) : (
+            "Verify & Continue"
+          )}
         </button>
 
         <div className="space-y-4">
           <p className="text-sm text-slate-500 font-medium">
-            Didn't receive the code? <button type="button" className="text-blue-600 font-bold hover:underline">Resend</button>
+            Didn't receive the code?{" "}
+            <button
+              type="button"
+              className="text-blue-600 font-bold hover:underline"
+            >
+              Resend
+            </button>
           </p>
         </div>
       </form>

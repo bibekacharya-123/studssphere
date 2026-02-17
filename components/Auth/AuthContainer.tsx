@@ -113,7 +113,6 @@ const AuthContainer: React.FC<AuthContainerProps> = ({
               identifier={tempUserData?.email || tempUserData?.phone || ""}
               type={tempUserData?.email ? "email" : "phone"}
               onVerified={handleOtpVerified}
-              onBack={() => setPhase(tempUserData?.email ? "forgotPassword" : "form")}
             />
           )}
         </div>
