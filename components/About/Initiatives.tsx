@@ -83,10 +83,19 @@ const Initiatives: React.FC = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16 mb-20">
         {data.map((item, i) => (
           <InitiativeCard key={i} {...item} />
         ))}
+      </div>
+
+      <div className="flex justify-center">
+        <button className="flex items-center gap-3 px-10 py-5 bg-slate-900 hover:bg-black text-white rounded-full font-bold transition-all shadow-xl hover:shadow-2xl active:scale-95 group">
+          View All Initiatives
+          <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center transition-transform group-hover:translate-x-1">
+            <i className="fa-solid fa-arrow-right text-sm"></i>
+          </div>
+        </button>
       </div>
     </section>
   );

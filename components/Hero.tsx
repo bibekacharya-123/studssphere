@@ -22,7 +22,7 @@ const Hero: React.FC<HeroProps> = ({ onStart }) => {
           onClick={onStart}
           className="mt-8 md:mt-10 px-8 md:px-10 py-3 md:py-4 bg-blue-500 hover:bg-blue-400 text-white font-extrabold rounded-lg transition-all hover:scale-105 hover:shadow-[0_0_25px_rgba(59,130,246,0.5)] active:scale-95 shadow-xl text-sm md:text-base uppercase tracking-widest"
         >
-          Start Crossing
+          Start Exploring
         </button>
       </div>
 

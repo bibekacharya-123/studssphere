@@ -8,8 +8,8 @@ const MissionVision: React.FC = () => {
       </h2>
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 md:gap-8 items-stretch justify-center">
         {/* Our Story Card */}
-        <div className="xl:col-span-7 flex justify-center xl:justify-end">
-          <div className="relative rounded-2xl overflow-hidden shadow-2xl group w-full h-[300px] md:h-[450px]">
+        <div className="xl:col-span-7">
+          <div className="relative rounded-2xl overflow-hidden shadow-2xl group w-full h-full min-h-[350px] md:min-h-[450px]">
             <img
               src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1000&q=80"
               alt="Our Story"
@@ -28,9 +28,9 @@ const MissionVision: React.FC = () => {
         </div>
 
         {/* Mission & Vision Column */}
-        <div className="xl:col-span-5 flex flex-col gap-4 md:gap-6 justify-center">
+        <div className="xl:col-span-5 flex flex-col gap-4 md:gap-6">
           {/* Mission */}
-          <div className="bg-mission-transparent rounded-2xl p-8 md:p-10 text-white shadow-lg flex flex-col justify-center h-full">
+          <div className="bg-mission-transparent rounded-2xl p-8 md:p-10 text-white shadow-lg flex flex-col justify-center flex-1">
             <div className="flex items-center gap-4 mb-4">
               <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-sm">
                 <i className="fa-solid fa-crosshairs text-xl md:text-2xl"></i>
@@ -47,7 +47,7 @@ const MissionVision: React.FC = () => {
           </div>
 
           {/* Vision */}
-          <div className="bg-primary-blue rounded-2xl p-8 md:p-10 text-white shadow-lg flex flex-col justify-center h-full">
+          <div className="bg-primary-blue rounded-2xl p-8 md:p-10 text-white shadow-lg flex flex-col justify-center flex-1">
             <div className="flex items-center gap-4 mb-4">
               <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-sm">
                 <i className="fa-solid fa-eye text-xl md:text-2xl"></i>

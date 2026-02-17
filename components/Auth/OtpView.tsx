@@ -2,12 +2,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 
 interface OtpViewProps {
-  phone: string;
+  identifier: string;
+  type?: 'phone' | 'email';
   onVerified: () => void;
-  onBack: () => void;
 }
 
-const OtpView: React.FC<OtpViewProps> = ({ phone, onVerified, onBack }) => {
+const OtpView: React.FC<OtpViewProps> = ({ identifier, type = 'phone', onVerified }) => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
@@ -52,8 +52,17 @@ const OtpView: React.FC<OtpViewProps> = ({ phone, onVerified, onBack }) => {
       </div>
 
       <div className="mb-10">
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">Verify Phone</h1>
-        <p className="text-slate-500 font-medium">We've sent a 6-digit code to <strong className="text-slate-900">+977 {phone.slice(0,3)}...{phone.slice(-3)}</strong></p>
+        <h1 className="text-3xl font-bold text-slate-900 mb-2">
+          {type === 'phone' ? 'Verify Phone' : 'Verify Email'}
+        </h1>
+        <p className="text-slate-500 font-medium">
+          We've sent a 6-digit code to{' '}
+          <strong className="text-slate-900">
+            {type === 'phone' 
+              ? `+977 ${identifier.slice(0, 3)}...${identifier.slice(-3)}`
+              : identifier}
+          </strong>
+        </p>
       </div>
 
       <form onSubmit={handleVerify} className="space-y-8">
@@ -85,13 +94,6 @@ const OtpView: React.FC<OtpViewProps> = ({ phone, onVerified, onBack }) => {
           <p className="text-sm text-slate-500 font-medium">
             Didn't receive the code? <button type="button" className="text-blue-600 font-bold hover:underline">Resend</button>
           </p>
-          <button 
-            type="button" 
-            onClick={onBack}
-            className="flex items-center gap-2 text-slate-400 hover:text-slate-600 transition mx-auto text-sm font-bold uppercase tracking-widest"
-          >
-            <i className="fa-solid fa-arrow-left"></i> Change Number
-          </button>
         </div>
       </form>
     </div>

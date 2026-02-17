@@ -89,157 +89,118 @@ const Navbar: React.FC<NavbarProps> = ({
 
         {/* Center Links (Desktop) */}
         <div className="hidden lg:flex space-x-8 items-center">
-          {user ? (
-            <>
-              {/* Logged In Portal Switcher Shortcuts */}
-              <button
-                onClick={() => onNavigate?.("educationPage")}
-                className={`font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center gap-2 px-4 py-2 rounded-xl h-10 ${
-                  isActive("educationPage")
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
-                    : "text-gray-200 hover:text-blue-300 hover:bg-white/5"
-                }`}
-              >
-                <i className="fa-solid fa-graduation-cap"></i>
-                Education
-              </button>
-              <button
-                onClick={() => onNavigate?.("jobsPage")}
-                className={`font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center gap-2 px-4 py-2 rounded-xl h-10 ${
-                  isActive("jobsPage")
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
-                    : "text-gray-200 hover:text-blue-300 hover:bg-white/5"
-                }`}
-              >
-                <i className="fa-solid fa-briefcase"></i>
-                Jobs
-              </button>
-              <button
-                onClick={() => onNavigate?.("scholarshipMain")}
-                className={`font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center gap-2 px-4 py-2 rounded-xl h-10 ${
-                  isActive("scholarshipMain")
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
-                    : "text-gray-200 hover:text-blue-300 hover:bg-white/5"
-                }`}
-              >
-                <i className="fa-solid fa-medal"></i>
-                Scholarships
-              </button>
-            </>
-          ) : (
-            /* Mega Menu Trigger Container (Guest) */
-            <div className="relative group">
-              <button className="font-medium text-gray-200 hover:text-blue-300 transition flex items-center gap-1 focus:outline-none py-2">
-                Explore
-                <i className="fa-solid fa-chevron-down text-[10px] transition-transform group-hover:rotate-180"></i>
-              </button>
+          {/* Mega Menu Trigger Container (Always shown) */}
+          <div className="relative group">
+            <button className="font-medium text-gray-200 hover:text-blue-300 transition flex items-center gap-1 focus:outline-none py-2">
+              Explore
+              <i className="fa-solid fa-chevron-down text-[10px] transition-transform group-hover:rotate-180"></i>
+            </button>
 
-              <div className="fixed top-[72px] left-0 w-full bg-white shadow-2xl border-y border-gray-100 opacity-0 invisible translate-y-2 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 transform origin-top overflow-hidden">
-                <div className="max-w-7xl mx-auto p-6 md:p-10">
-                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-[1fr_1fr_1fr_240px] gap-6">
-                    {/* Card 1: Education */}
-                    <button
-                      onClick={() => onNavigate?.("educationPage")}
-                      className="group/card relative h-56 overflow-hidden rounded-2xl cursor-pointer text-left shadow-lg border border-transparent hover:border-blue-500/30 transition-all"
-                    >
-                      <img
-                        src="https://images.unsplash.com/photo-1523050335392-495619989da1?auto=format&fit=crop&w=800&q=80"
-                        alt="Education"
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent" />
-                      <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
-                        <h3 className="text-lg font-bold mb-1 text-white uppercase tracking-tight">
-                          StudSphere Education
-                        </h3>
-                        <p className="text-[10px] text-white/70 font-black uppercase tracking-widest">
-                          Colleges, Universities & Resources
-                        </p>
-                      </div>
-                    </button>
-
-                    {/* Card 2: Job */}
-                    <button
-                      onClick={() => onNavigate?.("jobsPage")}
-                      className="group/card relative h-56 overflow-hidden rounded-lg cursor-pointer text-left shadow-lg border border-transparent hover:border-blue-500/30 transition-all"
-                    >
-                      <img
-                        src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=800&q=80"
-                        alt="Jobs"
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent" />
-                      <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
-                        <h3 className="text-lg font-bold mb-1 text-white uppercase tracking-tight">
-                          StudSphere for Job
-                        </h3>
-                        <p className="text-[10px] text-white/70 font-black uppercase tracking-widest">
-                          Connect with top employers
-                        </p>
-                      </div>
-                    </button>
-
-                    {/* Card 3: Scholarship */}
-                    <button
-                      onClick={() => onNavigate?.("scholarshipMain")}
-                      className="group/card relative h-56 overflow-hidden rounded-lg cursor-pointer text-left shadow-lg border border-transparent hover:border-blue-500/30 transition-all"
-                    >
-                      <img
-                        src="https://images.unsplash.com/photo-1523240682740-8f563509fa0a?auto=format&fit=crop&w=800&q=80"
-                        alt="Scholarship"
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent" />
-                      <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
-                        <h3 className="text-lg font-bold mb-1 text-white uppercase tracking-tight">
-                          StudSphere for Scholarship
-                        </h3>
-                        <p className="text-[10px] text-white/70 font-black uppercase tracking-widest">
-                          Unlock your academic potential
-                        </p>
-                      </div>
-                    </button>
-
-                    {/* Side Options */}
-                    <div className="flex flex-col gap-4">
-                      <button
-                        onClick={() => onNavigate?.("institutionZone")}
-                        className="flex-1 group/mini relative overflow-hidden rounded-lg cursor-pointer text-left shadow-sm border border-transparent hover:border-emerald-500/40 transition-all active:scale-95"
-                      >
-                        <img
-                          src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=400&q=80"
-                          alt="Institutions"
-                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover/mini:scale-110 opacity-60"
-                        />
-                        <div className="absolute inset-0 bg-black/60" />
-                        <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                          <h3 className="text-xs font-bold text-white uppercase tracking-tight">
-                            Institutions Zone
-                          </h3>
-                        </div>
-                      </button>
-                      <button
-                        onClick={() => onNavigate?.("employerZone")}
-                        className="flex-1 group/mini relative overflow-hidden rounded-lg cursor-pointer text-left shadow-sm border border-transparent hover:border-blue-500/40 transition-all active:scale-95"
-                      >
-                        <img
-                          src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=400&q=80"
-                          alt="Employers"
-                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover/mini:scale-110 opacity-60"
-                        />
-                        <div className="absolute inset-0 bg-black/60" />
-                        <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                          <h3 className="text-xs font-bold text-white uppercase tracking-tight">
-                            Employer Zone
-                          </h3>
-                        </div>
-                      </button>
+            <div className="fixed top-[72px] left-0 w-full bg-white shadow-2xl border-y border-gray-100 opacity-0 invisible translate-y-2 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 transform origin-top overflow-hidden">
+              <div className="max-w-7xl mx-auto p-6 md:p-10">
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-[1fr_1fr_1fr_240px] gap-6">
+                  {/* Card 1: Education */}
+                  <button
+                    onClick={() => onNavigate?.("educationPage")}
+                    className="group/card relative h-56 overflow-hidden rounded-2xl cursor-pointer text-left shadow-lg border border-transparent hover:border-blue-500/30 transition-all"
+                  >
+                    <img
+                      src="https://images.unsplash.com/photo-1523050335392-495619989da1?auto=format&fit=crop&w=800&q=80"
+                      alt="Education"
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+                      <h3 className="text-lg font-bold mb-1 text-white uppercase tracking-tight">
+                        StudSphere Education
+                      </h3>
+                      <p className="text-[10px] text-white/70 font-black uppercase tracking-widest">
+                        Colleges, Universities & Resources
+                      </p>
                     </div>
+                  </button>
+
+                  {/* Card 2: Job */}
+                  <button
+                    onClick={() => onNavigate?.("jobsPage")}
+                    className="group/card relative h-56 overflow-hidden rounded-lg cursor-pointer text-left shadow-lg border border-transparent hover:border-blue-500/30 transition-all"
+                  >
+                    <img
+                      src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=800&q=80"
+                      alt="Jobs"
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+                      <h3 className="text-lg font-bold mb-1 text-white uppercase tracking-tight">
+                        StudSphere for Job
+                      </h3>
+                      <p className="text-[10px] text-white/70 font-black uppercase tracking-widest">
+                        Connect with top employers
+                      </p>
+                    </div>
+                  </button>
+
+                  {/* Card 3: Scholarship */}
+                  <button
+                    onClick={() => onNavigate?.("scholarshipMain")}
+                    className="group/card relative h-56 overflow-hidden rounded-lg cursor-pointer text-left shadow-lg border border-transparent hover:border-blue-500/30 transition-all"
+                  >
+                    <img
+                      src="https://images.unsplash.com/photo-1523240682740-8f563509fa0a?auto=format&fit=crop&w=800&q=80"
+                      alt="Scholarship"
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+                      <h3 className="text-lg font-bold mb-1 text-white uppercase tracking-tight">
+                        StudSphere for Scholarship
+                      </h3>
+                      <p className="text-[10px] text-white/70 font-black uppercase tracking-widest">
+                        Unlock your academic potential
+                      </p>
+                    </div>
+                  </button>
+
+                  {/* Side Options */}
+                  <div className="flex flex-col gap-4">
+                    <button
+                      onClick={() => onNavigate?.("institutionZone")}
+                      className="flex-1 group/mini relative overflow-hidden rounded-lg cursor-pointer text-left shadow-sm border border-transparent hover:border-emerald-500/40 transition-all active:scale-95"
+                    >
+                      <img
+                        src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=400&q=80"
+                        alt="Institutions"
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover/mini:scale-110 opacity-60"
+                      />
+                      <div className="absolute inset-0 bg-black/60" />
+                      <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                        <h3 className="text-xs font-bold text-white uppercase tracking-tight">
+                          Institutions Zone
+                        </h3>
+                      </div>
+                    </button>
+                    <button
+                      onClick={() => onNavigate?.("employerZone")}
+                      className="flex-1 group/mini relative overflow-hidden rounded-lg cursor-pointer text-left shadow-sm border border-transparent hover:border-blue-500/40 transition-all active:scale-95"
+                    >
+                      <img
+                        src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=400&q=80"
+                        alt="Employers"
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover/mini:scale-110 opacity-60"
+                      />
+                      <div className="absolute inset-0 bg-black/60" />
+                      <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                        <h3 className="text-xs font-bold text-white uppercase tracking-tight">
+                          Employer Zone
+                        </h3>
+                      </div>
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
-          )}
+          </div>
 
           <button
             onClick={() => onNavigate?.("about")}
