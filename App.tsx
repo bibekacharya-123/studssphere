@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useAuth } from "./services/AuthContext";
 import Navbar from "./components/Navbar";
 import JobNavbar from "./components/Jobs/JobNavbar";
 import HomeView from "./components/Home/HomeView";
@@ -115,6 +116,7 @@ type currentView =
   | "eventDetails";
 
 const App: React.FC = () => {
+  const { user, logout } = useAuth();
   const [currentView, setCurrentView] = useState<
     | "home"
     | "about"
@@ -171,11 +173,6 @@ const App: React.FC = () => {
     | "eventsPage"
     | "eventDetails"
   >("home");
-  const [user, setUser] = useState<{
-    name: string;
-    email: string;
-    role: string;
-  } | null>(null);
   const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
   const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null);
   const [selectedCollegeId, setSelectedCollegeId] = useState<number | null>(
@@ -213,28 +210,24 @@ const App: React.FC = () => {
     window.scrollTo(0, 0);
   };
 
-  const handleLoginSuccess = (userData: {
-    name: string;
-    email: string;
-    role: string;
-  }) => {
-    setUser(userData);
+  const handleLoginSuccess = () => {
     navigateTo("home");
   };
 
-  const handleSignupSuccess = (userData: {
-    name: string;
-    email: string;
-    role: string;
-  }) => {
-    setUser(userData);
+  const handleSignupSuccess = () => {
     navigateTo("onboarding");
   };
 
   const handleLogout = () => {
-    setUser(null);
+    logout();
     navigateTo("home");
   };
+
+  const userData = user ? {
+    name: `${user.first_name} ${user.last_name}`,
+    email: user.email,
+    role: user.role
+  } : null;
 
   const isAuthView = currentView === "login" || currentView === "signup";
   const isJobView = [
@@ -291,22 +284,22 @@ const App: React.FC = () => {
       {!isAuthView &&
         currentView !== "onboarding" &&
         (isJobView ? (
-          <JobNavbar onNavigate={navigateTo} user={user} />
+          <JobNavbar onNavigate={navigateTo} user={userData} />
         ) : currentView === "campusForum" ? (
-          <ForumNavbar onNavigate={navigateTo} user={user} />
+          <ForumNavbar onNavigate={navigateTo} user={userData} />
         ) : isEducationView ? (
-          <EducationNavbar onNavigate={navigateTo} user={user} />
+          <EducationNavbar onNavigate={navigateTo} user={userData} />
         ) : (
           <Navbar
             onNavigate={navigateTo}
             currentView={currentView as any}
-            user={user}
+            user={userData}
             onLogout={handleLogout}
           />
         ))}
 
       {currentView === "home" && (
-        <HomeView onNavigate={navigateTo} user={user} />
+        <HomeView onNavigate={navigateTo} user={userData} />
       )}
 
       {currentView === "educationPage" && (

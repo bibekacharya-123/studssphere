@@ -85,9 +85,15 @@ const UniversitiesPage: React.FC<UniversitiesPageProps> = ({ onNavigate }) => {
 
         <main className="flex-1 container mx-auto px-6 py-12 max-w-7xl">
           <div className="mb-10">
-            <p className="text-slate-400 font-black text-xs uppercase tracking-widest">
-              Showing <span className="text-primary-600">{filteredColleges.length * 5}</span> results for colleges and courses
-            </p>
+            {filteredColleges.length === 0 ? (
+              <p className="text-slate-400 font-black text-xs uppercase tracking-widest">
+                No college found
+              </p>
+            ) : (
+              <p className="text-slate-400 font-black text-xs uppercase tracking-widest">
+                Showing <span className="text-primary-600">{filteredColleges.length * 5}</span> results for colleges and courses
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

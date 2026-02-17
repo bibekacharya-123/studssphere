@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useAuth } from '../../services/AuthContext';
 
 interface LoginViewProps {
   onSwitch: () => void;
@@ -10,19 +11,26 @@ const LoginView: React.FC<LoginViewProps> = ({ onSwitch, onSuccess }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const { login } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     setLoading(true);
-    // Simulate successful login
-    setTimeout(() => {
+
+    try {
+      await login(email, password);
       onSuccess({
-        name: 'Alex Smith',
+        name: email.split('@')[0],
         email: email,
         role: 'student'
       });
+    } catch (err: any) {
+      setError(err.message || 'Login failed. Please try again.');
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -38,12 +46,22 @@ const LoginView: React.FC<LoginViewProps> = ({ onSwitch, onSuccess }) => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {error && (
+          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-700 font-medium text-sm">{error}</p>
+          </div>
+        )}
+
         <div>
           <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">Email Address</label>
           <input 
-            type="email" placeholder="example@mail.com" required
-            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-lg focus:ring-4 focus:ring-blue-50 focus:border-blue-500 transition-all outline-none font-medium text-slate-900"
-            value={email} onChange={(e) => setEmail(e.target.value)}
+            type="email" 
+            placeholder="example@mail.com" 
+            required
+            disabled={loading}
+            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-lg focus:ring-4 focus:ring-blue-50 focus:border-blue-500 transition-all outline-none font-medium text-slate-900 disabled:bg-slate-100"
+            value={email} 
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
 
@@ -53,9 +71,13 @@ const LoginView: React.FC<LoginViewProps> = ({ onSwitch, onSuccess }) => {
             <button type="button" className="text-xs font-bold text-blue-600 hover:underline uppercase tracking-wide">Forgot?</button>
           </div>
           <input 
-            type="password" placeholder="Enter your password" required
-            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-lg focus:ring-4 focus:ring-blue-50 focus:border-blue-500 transition-all outline-none font-medium text-slate-900"
-            value={password} onChange={(e) => setPassword(e.target.value)}
+            type="password" 
+            placeholder="Enter your password" 
+            required
+            disabled={loading}
+            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-lg focus:ring-4 focus:ring-blue-50 focus:border-blue-500 transition-all outline-none font-medium text-slate-900 disabled:bg-slate-100"
+            value={password} 
+            onChange={(e) => setPassword(e.target.value)}
           />
         </div>
 

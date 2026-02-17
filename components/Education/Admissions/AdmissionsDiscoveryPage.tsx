@@ -5,6 +5,7 @@ import CollegeCard from "./CollegeCard";
 import AdmissionDetails from "./AdmissionDetails";
 import { COLLEGES } from "./Constants";
 import { College } from "./types";
+import { apiService } from "../../../services/api";
 
 interface AdmissionsDiscoveryPageProps {
   onNavigate: (view: any) => void;
@@ -15,11 +16,41 @@ const AdmissionsDiscoveryPage: React.FC<AdmissionsDiscoveryPageProps> = ({
 }) => {
   const [view, setView] = useState<"search" | "details">("search");
   const [selectedCollege, setSelectedCollege] = useState<College | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleViewDetails = (college: College) => {
-    setSelectedCollege(college);
-    setView("details");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  const handleViewDetails = async (college: College) => {
+    setLoading(true);
+    try {
+      // Try to fetch real data from backend
+      const response = await apiService.getCollegeById(parseInt(college.id));
+      if (response.data) {
+        // Merge backend data with mock programs data for display
+        const mockCollege = COLLEGES.find(c => c.id === college.id);
+        const mergedCollege: College = {
+          ...response.data as any,
+          id: college.id,
+          programs: mockCollege?.programs || [],
+          facilities: mockCollege?.facilities || [],
+          phoneNumber: response.data.phone || mockCollege?.phoneNumber,
+          contactEmail: response.data.email || mockCollege?.contactEmail,
+          website: response.data.website || mockCollege?.website,
+          logo: response.data.image_url || mockCollege?.logo,
+          university: response.data.affiliation || mockCollege?.university,
+        };
+        setSelectedCollege(mergedCollege);
+      } else {
+        // Fallback to mock data if API fetch fails
+        setSelectedCollege(college);
+      }
+    } catch (error) {
+      console.error("Error fetching college details:", error);
+      // Fallback to mock data
+      setSelectedCollege(college);
+    } finally {
+      setLoading(false);
+      setView("details");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   const handleBack = () => {
@@ -123,6 +154,13 @@ const AdmissionsDiscoveryPage: React.FC<AdmissionsDiscoveryPageProps> = ({
             </div>
           </div>
         </>
+      ) : loading ? (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+            <p className="text-slate-600 font-semibold">Loading college details...</p>
+          </div>
+        </div>
       ) : (
         selectedCollege && (
           <AdmissionDetails

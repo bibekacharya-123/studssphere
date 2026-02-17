@@ -6,7 +6,7 @@ import OtpView from "./OtpView";
 interface AuthContainerProps {
   type: "login" | "signup";
   onSwitch: () => void;
-  onSuccess: (user: { name: string; email: string; role: string }) => void;
+  onSuccess: () => void;
   onClose: () => void;
 }
 
@@ -23,16 +23,13 @@ const AuthContainer: React.FC<AuthContainerProps> = ({
 
   const handleSignupData = (data: any) => {
     setTempUserData(data);
-    setPhase("otp");
+   // In the future, this can be updated to verify OTP if needed
+    onSuccess();
   };
 
   const handleOtpVerified = () => {
     if (tempUserData) {
-      onSuccess({
-        name: tempUserData.fullName,
-        email: tempUserData.email,
-        role: tempUserData.userType,
-      });
+      onSuccess();
     }
   };
 

@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../services/AuthContext';
 
 interface SignupViewProps {
   onSwitch: () => void;
@@ -16,11 +17,14 @@ const SignupView: React.FC<SignupViewProps> = ({ onSwitch, onSignup }) => {
     password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [passwordCriteria, setPasswordCriteria] = useState({
     length: false,
     upper: false,
     number: false
   });
+  const { register } = useAuth();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
@@ -40,11 +44,44 @@ const SignupView: React.FC<SignupViewProps> = ({ onSwitch, onSignup }) => {
     setFormData(prev => ({ ...prev, phone: val }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.phone.length !== 10) return alert("Phone number must be 10 digits");
-    if (!passwordCriteria.length || !passwordCriteria.upper || !passwordCriteria.number) return alert("Please meet all password requirements");
-    onSignup(formData);
+    setError('');
+
+    if (formData.phone.length !== 10) {
+      setError("Phone number must be 10 digits");
+      return;
+    }
+
+    if (!passwordCriteria.length || !passwordCriteria.upper || !passwordCriteria.number) {
+      setError("Please meet all password requirements");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const [firstName, ...lastNameParts] = formData.fullName.split(' ');
+      const lastName = lastNameParts.join(' ') || 'User';
+
+      await register(
+        formData.email,
+        formData.password,
+        firstName,
+        lastName,
+        formData.userType
+      );
+
+      onSignup({
+        fullName: formData.fullName,
+        email: formData.email,
+        userType: formData.userType
+      });
+    } catch (err: any) {
+      setError(err.message || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -60,13 +97,20 @@ const SignupView: React.FC<SignupViewProps> = ({ onSwitch, onSignup }) => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
+        {error && (
+          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-700 font-medium text-sm">{error}</p>
+          </div>
+        )}
+
         <div className="grid grid-cols-2 gap-4">
           <div className="col-span-2 sm:col-span-1">
             <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">I am a</label>
             <select 
               id="userType" 
               required
-              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-50 focus:border-blue-500 transition-all outline-none font-medium text-slate-900 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%232563EB%22%20stroke-width%3D%222%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20d%3D%22M19%209l-7%207-7-7%22%20%2F%3E%3C%2Fsvg%3E')] bg-[length:1em] bg-[right_1rem_center] bg-no-repeat"
+              disabled={loading}
+              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-50 focus:border-blue-500 transition-all outline-none font-medium text-slate-900 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%232563EB%22%20stroke-width%3D%222%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20d%3D%22M19%209l-7%207-7-7%22%20%2F%3E%3C%2Fsvg%3E')] bg-[length:1em] bg-[right_1rem_center] bg-no-repeat disabled:bg-slate-100"
               value={formData.userType}
               onChange={handleInputChange}
             >
@@ -83,7 +127,8 @@ const SignupView: React.FC<SignupViewProps> = ({ onSwitch, onSignup }) => {
             <select 
               id="subCategory" 
               required={!!formData.userType}
-              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-50 focus:border-blue-500 transition-all outline-none font-medium text-slate-900 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%232563EB%22%20stroke-width%3D%222%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20d%3D%22M19%209l-7%207-7-7%22%20%2F%3E%3C%2Fsvg%3E')] bg-[length:1em] bg-[right_1rem_center] bg-no-repeat"
+              disabled={loading}
+              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-50 focus:border-blue-500 transition-all outline-none font-medium text-slate-900 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%232563EB%22%20stroke-width%3D%222%22%3E%3Cpath%20stroke-linecap%3D%22round%20stroke-linejoin%3D%22round%22%20d%3D%22M19%209l-7%207-7-7%22%20%2F%3E%3C%2Fsvg%3E')] bg-[length:1em] bg-[right_1rem_center] bg-no-repeat disabled:bg-slate-100"
               value={formData.subCategory}
               onChange={handleInputChange}
             >
@@ -107,22 +152,32 @@ const SignupView: React.FC<SignupViewProps> = ({ onSwitch, onSignup }) => {
         <div>
           <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">Full Name</label>
           <input 
-            type="text" id="fullName" placeholder="Jagdis Dhami" required
-            className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-50 focus:border-blue-500 transition-all outline-none font-medium text-slate-900"
-            value={formData.fullName} onChange={handleInputChange}
+            type="text" 
+            id="fullName" 
+            placeholder="Jagdis Dhami" 
+            required
+            disabled={loading}
+            className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-50 focus:border-blue-500 transition-all outline-none font-medium text-slate-900 disabled:bg-slate-100"
+            value={formData.fullName} 
+            onChange={handleInputChange}
           />
         </div>
 
         <div>
           <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">Phone Number</label>
-          <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl overflow-hidden focus-within:ring-4 focus-within:ring-blue-50 focus-within:border-blue-500 transition-all">
+          <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl overflow-hidden focus-within:ring-4 focus-within:ring-blue-50 focus-within:border-blue-500 transition-all disabled:bg-slate-100">
             <div className="flex items-center gap-2 px-3 bg-slate-100 border-r border-slate-200 text-sm font-bold h-full py-4 text-slate-600">
               <img src="https://flagcdn.com/w40/np.png" width="16" alt="NP" /> +977
             </div>
             <input 
-              type="tel" id="phone" placeholder="9800000000" required
-              className="flex-1 p-3.5 bg-transparent outline-none font-medium text-slate-900"
-              value={formData.phone} onChange={handlePhoneInput}
+              type="tel" 
+              id="phone" 
+              placeholder="9800000000" 
+              required
+              disabled={loading}
+              className="flex-1 p-3.5 bg-transparent outline-none font-medium text-slate-900 disabled:bg-slate-100"
+              value={formData.phone} 
+              onChange={handlePhoneInput}
             />
           </div>
         </div>
@@ -130,9 +185,14 @@ const SignupView: React.FC<SignupViewProps> = ({ onSwitch, onSignup }) => {
         <div>
           <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">Email Address</label>
           <input 
-            type="email" id="email" placeholder="example@mail.com" required
-            className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-50 focus:border-blue-500 transition-all outline-none font-medium text-slate-900"
-            value={formData.email} onChange={handleInputChange}
+            type="email" 
+            id="email" 
+            placeholder="example@mail.com" 
+            required
+            disabled={loading}
+            className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-50 focus:border-blue-500 transition-all outline-none font-medium text-slate-900 disabled:bg-slate-100"
+            value={formData.email} 
+            onChange={handleInputChange}
           />
         </div>
 
@@ -140,13 +200,20 @@ const SignupView: React.FC<SignupViewProps> = ({ onSwitch, onSignup }) => {
           <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">Password</label>
           <div className="relative">
             <input 
-              type={showPassword ? 'text' : 'password'} id="password" placeholder="Create a strong password" required
-              className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-50 focus:border-blue-500 transition-all outline-none font-medium text-slate-900 pr-12"
-              value={formData.password} onChange={handleInputChange}
+              type={showPassword ? 'text' : 'password'} 
+              id="password" 
+              placeholder="Create a strong password" 
+              required
+              disabled={loading}
+              className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-50 focus:border-blue-500 transition-all outline-none font-medium text-slate-900 pr-12 disabled:bg-slate-100"
+              value={formData.password} 
+              onChange={handleInputChange}
             />
             <button 
-              type="button" onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition"
+              type="button" 
+              onClick={() => setShowPassword(!showPassword)}
+              disabled={loading}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition disabled:opacity-50"
             >
               <i className={`fa-regular ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
             </button>
@@ -159,8 +226,12 @@ const SignupView: React.FC<SignupViewProps> = ({ onSwitch, onSignup }) => {
           </div>
         </div>
 
-        <button type="submit" className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-xl shadow-blue-500/20 transition-all active:scale-[0.98] mt-4">
-          Create Account
+        <button 
+          type="submit" 
+          disabled={loading}
+          className="w-full py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white font-bold rounded-lg shadow-xl shadow-blue-500/20 transition-all active:scale-[0.98] mt-4 flex items-center justify-center gap-2"
+        >
+          {loading ? <i className="fa-solid fa-spinner animate-spin"></i> : 'Create Account'}
         </button>
 
         <div className="relative my-8">

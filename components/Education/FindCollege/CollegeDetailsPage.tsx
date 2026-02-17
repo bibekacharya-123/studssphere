@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { apiService } from "../../../services/api";
 
 interface CollegeDetailsPageProps {
   id: number;
@@ -10,161 +11,118 @@ const CollegeDetailsPage: React.FC<CollegeDetailsPageProps> = ({
   onNavigate,
 }) => {
   const [activeTab, setActiveTab] = useState("about");
+  const [college, setCollege] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [courses, setCourses] = useState<any[]>([]);
+  const [scholarships, setScholarships] = useState<any[]>([]);
+  const [gallery, setGallery] = useState<any[]>([]);
+  const [programs, setPrograms] = useState<any[]>([]);
+  const [about, setAbout] = useState<any>(null);
+  const [admissions, setAdmissions] = useState<any>(null);
+  const [departments, setDepartments] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<any[]>([]);
 
-  const courses = [
-    {
-      name: "BBA (Bachelor of Business Admin)",
-      level: "Undergraduate",
-      duration: "4 Years",
-      fees: "NPR 6,50,000",
-      focus: "Management, Finance, Marketing",
-    },
-    {
-      name: "BSc. CSIT",
-      level: "Undergraduate",
-      duration: "4 Years",
-      fees: "NPR 8,00,000",
-      focus: "Software, Networking, AI",
-    },
-    {
-      name: "BIM (Information Mgmt)",
-      level: "Undergraduate",
-      duration: "4 Years",
-      fees: "NPR 7,20,000",
-      focus: "Business Intelligence, IT",
-    },
-    {
-      name: "BCA (Bachelor of Computer App)",
-      level: "Undergraduate",
-      duration: "4 Years",
-      fees: "NPR 6,00,000",
-      focus: "App Development, Systems",
-    },
-    {
-      name: "BSc. Microbiology",
-      level: "Undergraduate",
-      duration: "4 Years",
-      fees: "NPR 5,80,000",
-      focus: "Lab Science, Research",
-    },
-  ];
+  useEffect(() => {
+    fetchCollegeDetails();
+  }, [id]);
 
-  const scholarships = [
-    {
-      title: "Merit Scholarship",
-      percentage: "Up to 100%",
-      description:
-        "Awarded to students with exceptional academic performance in their previous board exams and entrance tests.",
-      eligibility: ["GPA 3.8+ in +2/NEB", "Top 5% in Entrance Exam"],
-      color: "yellow",
-    },
-    {
-      title: "Need-Based Aid",
-      percentage: "Up to 50%",
-      description:
-        "Financial assistance for students from economically challenged backgrounds to ensure education for all.",
-      eligibility: [
-        "Verification from Ward Office",
-        "Minimum GPA 2.8 maintained",
-      ],
-      color: "blue",
-    },
-    {
-      title: "Sports & Talent",
-      percentage: "Up to 75%",
-      description:
-        "For students who have represented the district or nation in sports, arts, or music.",
-      eligibility: ["National/District Certificates", "Trial/Audition Success"],
-      color: "green",
-    },
-  ];
+  const decodeBase64Json = (data: string | any): any => {
+    try {
+      if (typeof data === 'string') {
+        // Check if it looks like base64 (ends with = or is valid base64)
+        if (/^[A-Za-z0-9+/]*={0,2}$/.test(data)) {
+          const decoded = atob(data);
+          return JSON.parse(decoded);
+        }
+        // Try parsing directly as JSON
+        return JSON.parse(data);
+      }
+      return data;
+    } catch (e) {
+      console.error("Error decoding/parsing data:", e);
+      return [];
+    }
+  };
 
-  const reviews = [
-    {
-      name: "Sushil Adhikari",
-      initials: "SA",
-      role: "BBA Student",
-      time: "2 months ago",
-      rating: 5,
-      comment:
-        "The faculty here is extremely supportive. The blend of practical workshops and theory really helped me land my internship at a top bank. Highly recommend for Management students!",
-      avatarColor: "bg-indigo-100 text-indigo-600",
-    },
-    {
-      name: "Priya Rana",
-      initials: "PR",
-      role: "CSIT Alumni",
-      time: "5 months ago",
-      rating: 4,
-      comment:
-        "Great computer labs and internet facilities. The curriculum is updated regularly. Canteen food could be better, but overall a fantastic learning environment.",
-      avatarColor: "bg-pink-100 text-pink-600",
-    },
-    {
-      name: "Anish Tamang",
-      initials: "AT",
-      role: "BIM Student",
-      time: "1 year ago",
-      rating: 5,
-      comment:
-        "The extracurricular activities and clubs are the best part. I joined the Robotics club and we won the national competition. It really balances study and fun.",
-      avatarColor: "bg-emerald-100 text-emerald-600",
-    },
-  ];
+  const fetchCollegeDetails = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await apiService.getCollegeById(id);
+      if (response.data) {
+        setCollege(response.data);
+        
+        // Decode base64 and parse JSON data from backend
+        if (response.data.courses) {
+          setCourses(decodeBase64Json(response.data.courses));
+        }
+        
+        if (response.data.scholarships) {
+          setScholarships(decodeBase64Json(response.data.scholarships));
+        }
+        
+        if (response.data.gallery) {
+          setGallery(decodeBase64Json(response.data.gallery));
+        }
+        
+        if (response.data.programs_list) {
+          setPrograms(decodeBase64Json(response.data.programs_list));
+        }
+        
+        if (response.data.about) {
+          setAbout(decodeBase64Json(response.data.about));
+        }
+        
+        if (response.data.admissions) {
+          setAdmissions(decodeBase64Json(response.data.admissions));
+        }
+        
+        if (response.data.departments) {
+          setDepartments(decodeBase64Json(response.data.departments));
+        }
+        
+        if (response.data.college_reviews) {
+          setReviews(decodeBase64Json(response.data.college_reviews));
+        }
+      } else {
+        setError("Failed to fetch college details");
+      }
+    } catch (err: any) {
+      setError(err.message || "Failed to fetch college details");
+      console.error("Error fetching college:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const galleryImages = [
-    {
-      url: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
-      caption: "Graduation Day 2023",
-    },
-    {
-      url: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
-      caption: "Modern Classrooms",
-    },
-    {
-      url: "https://images.unsplash.com/photo-1599689018596-3d237199276e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
-      caption: "E-Library Facility",
-    },
-    {
-      url: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
-      caption: "IT Lab Session",
-    },
-    {
-      url: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
-      caption: "Annual Sports Meet",
-    },
-    {
-      url: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
-      caption: "Guest Lecture Series",
-    },
-  ];
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <i className="fa-solid fa-spinner animate-spin text-4xl text-primary-600 mb-4"></i>
+          <p className="text-slate-600 font-semibold">Loading college details...</p>
+        </div>
+      </div>
+    );
+  }
 
-  const programs = [
-    {
-      name: "Bachelor of Business Administration (BBA)",
-      category: "Management",
-      duration: "4 Years / 8 Semesters",
-      color: "blue",
-    },
-    {
-      name: "BSc. Computer Science & IT (CSIT)",
-      category: "Science & Tech",
-      duration: "4 Years / 8 Semesters",
-      color: "emerald",
-    },
-    {
-      name: "Bachelor of Information Management (BIM)",
-      category: "Mgmt & IT",
-      duration: "4 Years / 8 Semesters",
-      color: "pink",
-    },
-    {
-      name: "Master of Business Studies (MBS)",
-      category: "Postgraduate",
-      duration: "2 Years / 4 Semesters",
-      color: "orange",
-    },
-  ];
+  if (error || !college) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <p className="text-red-600 font-semibold mb-4">{error || "College not found"}</p>
+          <button
+            onClick={() => onNavigate("findCollege")}
+            className="px-6 py-2 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700"
+          >
+            Back to Colleges
+          </button>
+        </div>
+      </div>
+    );
+  }
+
 
   return (
     <div className="bg-slate-50 min-h-screen font-jakarta">
@@ -183,37 +141,42 @@ const CollegeDetailsPage: React.FC<CollegeDetailsPageProps> = ({
         <div className="flex flex-col md:flex-row gap-8 items-end -mt-[124px]">
           <div className="bg-white p-2 rounded-2xl shadow-2xl border-4 border-white h-44 w-44 flex-shrink-0 flex items-center justify-center animate-fadeInUp">
             <div className="w-full h-full bg-slate-900 rounded-xl flex items-center justify-center text-white text-6xl font-black">
-              G
+              {college?.name?.[0] || 'C'}
             </div>
           </div>
 
           <div className="flex-1 pb-4 animate-fadeIn">
             <h1 className="text-3xl md:text-5xl font-black text-white mb-10 tracking-tight drop-shadow-sm flex items-center gap-4">
-              Goldenagete International College
-              <i className="fa-solid fa-circle-check text-primary-500 text-3xl"></i>
+              {college?.name}
+              {college?.verified && (
+                <i className="fa-solid fa-circle-check text-primary-500 text-3xl"></i>
+              )}
             </h1>
             <div className="flex flex-wrap items-center gap-6 text-[10px] font-black uppercase tracking-widest text-slate-300">
               <span className="flex items-center gap-2">
                 <i className="fa-solid fa-location-dot text-primary-500"></i>
-                Kamal Pokhari, Kathmandu
+                {college?.location || 'Location not available'}
               </span>
               <span className="bg-amber-500/10 text-amber-500 px-3 py-1 rounded-full border border-amber-500/20 flex items-center gap-2 shadow-sm backdrop-blur-sm">
-                <i className="fa-solid fa-star text-[10px]"></i> 4.8 (1,240
-                Reviews)
+                <i className="fa-solid fa-star text-[10px]"></i> {college?.rating || 0} ({college?.reviews?.toLocaleString() || 0} Reviews)
               </span>
-              <a
-                href="#"
-                className="text-primary-400 hover:text-primary-300 font-black flex items-center gap-2 transition-colors"
-              >
-                www.goldenagete.edu.np{" "}
-                <i className="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-              </a>
+              {college?.website && (
+                <a
+                  href={`https://${college.website}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary-400 hover:text-primary-300 font-black flex items-center gap-2 transition-colors"
+                >
+                  {college.website} 
+                  <i className="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                </a>
+              )}
             </div>
           </div>
 
           <div className="flex flex-col items-end gap-3 pb-4">
             <span className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em]">
-              15k+ Students Enrolled
+              {college?.programs || 0}+ Programs Available
             </span>
             <div className="flex gap-4">
               <button className="px-8 py-3.5 bg-white border border-slate-100 rounded-xl font-black text-[10px] uppercase tracking-widest text-slate-500 hover:text-primary-600 hover:border-primary-100 transition-all shadow-sm">
@@ -268,13 +231,7 @@ const CollegeDetailsPage: React.FC<CollegeDetailsPageProps> = ({
                 About the College
               </h2>
               <p className="text-lg text-slate-500 font-medium leading-relaxed max-w-4xl">
-                Goldenagete International College is a premier institution in
-                Kathmandu, established in 2005 with a vision to provide
-                world-class education focused on global competencies and local
-                relevance. We offer quality education across various streams
-                including Management, Humanities, and Science with
-                state-of-the-art campus facilities and highly experienced
-                faculty members.
+                {college?.description || 'No description available for this college.'}
               </p>
             </section>
 
@@ -282,51 +239,50 @@ const CollegeDetailsPage: React.FC<CollegeDetailsPageProps> = ({
               <AboutCard
                 icon="fa-award"
                 title="Vision & Mission"
-                desc="To be recognized as the epicenter for modern education, producing competent and globally minded leaders."
+                desc={about?.vision || 'Striving for excellence in education.'}
                 color="blue"
               />
               <AboutCard
                 icon="fa-graduation-cap"
                 title="Accreditations"
-                desc="Affiliated with Tribhuvan University and recognized by the Ministry of Education, Nepal. ISO 9001 certified campus."
+                desc={about?.accreditations || 'Accredited by relevant authorities.'}
                 color="emerald"
               />
               <AboutCard
                 icon="fa-school"
                 title="Campus Life"
-                desc="Vibrant student life with 15+ clubs, regular events, international guest lectures, and career counseling."
+                desc={about?.campus_life || 'Vibrant and engaging campus environment.'}
                 color="purple"
               />
             </div>
 
-            <section className="bg-emerald-50 rounded-xl p-10 md:p-16 border border-emerald-100 flex flex-col md:flex-row gap-12 items-center">
-              <div className="w-40 h-40 rounded-xl overflow-hidden shadow-2xl border-4 border-white flex-shrink-0">
-                <img
-                  src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80"
-                  className="w-full h-full object-cover"
-                  alt="Principal"
-                />
-              </div>
-              <div className="flex-1 text-center md:text-left">
-                <h3 className="text-2xl font-black text-emerald-900 mb-6 uppercase tracking-tight">
-                  Principal's Message
-                </h3>
-                <p className="text-emerald-700 font-medium italic text-lg leading-relaxed mb-8">
-                  "At Goldenagete, we don't just teach; we inspire. Our holistic
-                  approach ensures that every student leaves our gates not just
-                  with a degree, but with a character built on integrity and a
-                  mind sharpened for the future."
-                </p>
-                <div>
-                  <p className="font-black text-emerald-900 text-lg">
-                    Dr. Ramesh Adhikari
-                  </p>
-                  <p className="text-xs font-black text-emerald-600 uppercase tracking-widest mt-1">
-                    Principal, PhD in Educational Leadership
-                  </p>
+            {about && (
+              <section className="bg-emerald-50 rounded-xl p-10 md:p-16 border border-emerald-100 flex flex-col md:flex-row gap-12 items-center">
+                <div className="w-40 h-40 rounded-xl overflow-hidden shadow-2xl border-4 border-white flex-shrink-0">
+                  <img
+                    src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80"
+                    className="w-full h-full object-cover"
+                    alt="Principal"
+                  />
                 </div>
-              </div>
-            </section>
+                <div className="flex-1 text-center md:text-left">
+                  <h3 className="text-2xl font-black text-emerald-900 mb-6 uppercase tracking-tight">
+                    Principal's Message
+                  </h3>
+                  <p className="text-emerald-700 font-medium italic text-lg leading-relaxed mb-8">
+                    "{about.principal_message}"
+                  </p>
+                  <div>
+                    <p className="font-black text-emerald-900 text-lg">
+                      {about.principal_name}
+                    </p>
+                    <p className="text-xs font-black text-emerald-600 uppercase tracking-widest mt-1">
+                      {about.principal_title}
+                    </p>
+                  </div>
+                </div>
+              </section>
+            )}
           </div>
         )}
 
@@ -393,22 +349,15 @@ const CollegeDetailsPage: React.FC<CollegeDetailsPageProps> = ({
                   Eligibility Criteria
                 </h2>
                 <ul className="space-y-6">
-                  <AdmissionItem
-                    icon="fa-check-circle"
-                    text="Minimum GPA 2.4 in NEB +2 or equivalent (A-Levels, CBSE)."
-                  />
-                  <AdmissionItem
-                    icon="fa-check-circle"
-                    text="CMAT/KUUMAT entrance score required for Management."
-                  />
-                  <AdmissionItem
-                    icon="fa-check-circle"
-                    text="Pass in College Internal Assessment (Written + Interview)."
-                  />
-                  <AdmissionItem
-                    icon="fa-check-circle"
-                    text="English proficiency is mandatory for international students."
-                  />
+                  {admissions?.eligibility?.criteria?.map((criterion: string, idx: number) => (
+                    <AdmissionItem
+                      key={idx}
+                      icon="fa-check-circle"
+                      text={criterion}
+                    />
+                  )) || [
+                    <AdmissionItem key="default" icon="fa-check-circle" text="Loading eligibility criteria..." />
+                  ]}
                 </ul>
               </section>
               <section className="bg-primary-600 rounded-xl p-10 text-white shadow-2xl relative overflow-hidden">
@@ -417,13 +366,7 @@ const CollegeDetailsPage: React.FC<CollegeDetailsPageProps> = ({
                   Documents Checklist
                 </h3>
                 <ul className="space-y-4">
-                  {[
-                    "Original Academic Transcripts (SEE & +2)",
-                    "Provisional & Migration Certificates",
-                    "Character Certificates",
-                    "Citizenship Copy / Passport",
-                    "2 Passport Size Photos",
-                  ].map((doc) => (
+                  {admissions?.documents?.documents?.map((doc: string) => (
                     <li
                       key={doc}
                       className="flex items-center gap-4 text-sm font-bold border-b border-white/10 pb-4 last:border-0"
@@ -431,7 +374,12 @@ const CollegeDetailsPage: React.FC<CollegeDetailsPageProps> = ({
                       <i className="fa-solid fa-file-circle-check text-primary-200"></i>
                       {doc}
                     </li>
-                  ))}
+                  )) || [
+                    <li key="default" className="flex items-center gap-4 text-sm font-bold border-b border-white/10 pb-4">
+                      <i className="fa-solid fa-file-circle-check text-primary-200"></i>
+                      Loading document checklist...
+                    </li>
+                  ]}
                 </ul>
               </section>
             </div>
@@ -441,31 +389,16 @@ const CollegeDetailsPage: React.FC<CollegeDetailsPageProps> = ({
                 Admissions Timeline
               </h2>
               <div className="relative pl-10 space-y-12 before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-slate-100 before:rounded-full">
-                <TimelineStep
-                  step="01"
-                  title="Application Submission"
-                  sub="May - June"
-                  desc="Fill out the official college application form online and upload all scanned academic documents."
-                />
-                <TimelineStep
-                  step="02"
-                  title="Entrance Exams"
-                  sub="July"
-                  desc="Appear for the mandatory university/college entrance exam (CMAT/IOST). Admit cards are issued 3 days prior."
-                />
-                <TimelineStep
-                  step="03"
-                  title="Interviews & Merit List"
-                  sub="August"
-                  desc="Shortlisted candidates face a personal interview. Final merit list is published within a week."
-                />
-                <TimelineStep
-                  step="04"
-                  title="Enrollment & Orientation"
-                  sub="September"
-                  desc="Selected students must pay admission fees to secure their seat. Orientation program follows shortly."
-                  isLast
-                />
+                {admissions?.timeline?.map((item: any, idx: number) => (
+                  <TimelineStep
+                    key={idx}
+                    step={item.step}
+                    title={item.title}
+                    sub={item.sub}
+                    desc={item.desc}
+                    isLast={idx === (admissions?.timeline?.length - 1)}
+                  />
+                )) || <p>Loading timeline...</p>}
               </div>
             </section>
 
@@ -480,24 +413,24 @@ const CollegeDetailsPage: React.FC<CollegeDetailsPageProps> = ({
         {/* TAB: DEPARTMENTS */}
         {activeTab === "departments" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 animate-fadeIn">
-            <DeptCard
-              icon="fa-laptop-code"
-              title="IT & Computer Science"
-              color="blue"
-              desc="Cutting-edge technology, cloud computing, AI, and cybersecurity. Features dedicated coding labs and industry collaboration projects."
-            />
-            <DeptCard
-              icon="fa-briefcase"
-              title="Management Studies"
-              color="emerald"
-              desc="Financial analysis, strategic marketing, organizational behavior, and entrepreneurship. Strong tie-ups with local businesses."
-            />
-            <DeptCard
-              icon="fa-book"
-              title="Humanities & Social Science"
-              color="pink"
-              desc="Critical thinking, social work, mass communication, and psychology. Encourages community research and engagement."
-            />
+            {departments.length > 0 ? (
+              departments.map((dept: any, idx: number) => (
+                <DeptCard
+                  key={idx}
+                  icon={dept.icon}
+                  title={dept.title}
+                  color={dept.color}
+                  desc={dept.desc}
+                />
+              ))
+            ) : (
+              <DeptCard
+                icon="fa-laptop-code"
+                title="IT & Computer Science"
+                color="blue"
+                desc="Cutting-edge technology, cloud computing, AI, and cybersecurity."
+              />
+            )}
           </div>
         )}
 
@@ -599,24 +532,28 @@ const CollegeDetailsPage: React.FC<CollegeDetailsPageProps> = ({
         {/* TAB: GALLERY */}
         {activeTab === "gallery" && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 animate-fadeIn">
-            {galleryImages.map((img, i) => (
-              <div
-                key={i}
-                className="group relative aspect-[4/3] rounded-xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 cursor-zoom-in"
-              >
-                <img
-                  src={img.url}
-                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                  alt=""
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className="absolute bottom-8 left-8 right-8 text-white translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all">
-                  <p className="font-black text-sm uppercase tracking-widest">
-                    {img.caption}
-                  </p>
+            {gallery.length > 0 ? (
+              gallery.map((img, i) => (
+                <div
+                  key={i}
+                  className="group relative aspect-[4/3] rounded-xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 cursor-zoom-in"
+                >
+                  <img
+                    src={img.url}
+                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                    alt=""
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <div className="absolute bottom-8 left-8 right-8 text-white translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all">
+                    <p className="font-black text-sm uppercase tracking-widest">
+                      {img.caption}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-slate-500">No gallery images available</p>
+            )}
           </div>
         )}
 
@@ -626,7 +563,7 @@ const CollegeDetailsPage: React.FC<CollegeDetailsPageProps> = ({
             <div className="bg-white rounded-xl p-10 md:p-16 border border-slate-100 shadow-sm flex flex-col md:flex-row items-center gap-16">
               <div className="text-center shrink-0">
                 <div className="text-7xl font-black text-slate-900 tracking-tighter mb-2">
-                  4.8
+                  {college?.rating || 4.5}
                 </div>
                 <div className="flex gap-1 justify-center text-amber-400 text-xl mb-4">
                   {[...Array(5)].map((_, i) => (
@@ -634,7 +571,7 @@ const CollegeDetailsPage: React.FC<CollegeDetailsPageProps> = ({
                   ))}
                 </div>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                  Based on 1,240 reviews
+                  Based on {college?.reviews || 0} reviews
                 </p>
               </div>
               <div className="flex-1 space-y-4 w-full">
@@ -667,44 +604,50 @@ const CollegeDetailsPage: React.FC<CollegeDetailsPageProps> = ({
             </div>
 
             <div className="space-y-10 max-w-4xl mx-auto">
-              {reviews.map((r, i) => (
-                <div
-                  key={i}
-                  className="bg-white p-10 rounded-xl border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 group"
-                >
-                  <div className="flex items-center justify-between mb-8">
-                    <div className="flex items-center gap-6">
-                      <div
-                        className={`w-14 h-14 rounded-xl flex items-center justify-center font-black text-xl shadow-inner ${r.avatarColor}`}
-                      >
-                        {r.initials}
+              {reviews.length > 0 ? (
+                reviews.map((r, i) => (
+                  <div
+                    key={i}
+                    className="bg-white p-10 rounded-xl border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 group"
+                  >
+                    <div className="flex items-center justify-between mb-8">
+                      <div className="flex items-center gap-6">
+                        <div
+                          className={`w-14 h-14 rounded-xl flex items-center justify-center font-black text-xl shadow-inner ${r.avatar_color}`}
+                        >
+                          {r.initials}
+                        </div>
+                        <div>
+                          <h4 className="font-black text-slate-900 leading-tight group-hover:text-primary-600 transition-colors">
+                            {r.name}
+                          </h4>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+                            {r.role} • {r.time}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-black text-slate-900 leading-tight group-hover:text-primary-600 transition-colors">
-                          {r.name}
-                        </h4>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-                          {r.role} • {r.time}
-                        </p>
+                      <div className="flex gap-0.5 text-amber-400 text-sm">
+                        {[...Array(5)].map((_, idx) => (
+                          <i
+                            key={idx}
+                            className={`fa-solid fa-star ${idx < r.rating ? "text-amber-400" : "text-slate-100"}`}
+                          ></i>
+                        ))}
                       </div>
                     </div>
-                    <div className="flex gap-0.5 text-amber-400 text-sm">
-                      {[...Array(5)].map((_, idx) => (
-                        <i
-                          key={idx}
-                          className={`fa-solid fa-star ${idx < r.rating ? "text-amber-400" : "text-slate-100"}`}
-                        ></i>
-                      ))}
-                    </div>
+                    <p className="text-slate-500 font-medium leading-relaxed italic text-lg">
+                      "{r.comment}"
+                    </p>
                   </div>
-                  <p className="text-slate-500 font-medium leading-relaxed italic text-lg">
-                    "{r.comment}"
-                  </p>
-                </div>
-              ))}
-              <button className="w-full py-5 bg-white border-2 border-slate-100 rounded-xl font-black text-[10px] uppercase tracking-widest text-slate-400 hover:text-primary-600 hover:border-primary-100 transition-all">
-                Load More Reviews
-              </button>
+                ))
+              ) : (
+                <p className="text-center text-slate-500">No reviews available yet.</p>
+              )}
+              {reviews.length > 0 && (
+                <button className="w-full py-5 bg-white border-2 border-slate-100 rounded-xl font-black text-[10px] uppercase tracking-widest text-slate-400 hover:text-primary-600 hover:border-primary-100 transition-all">
+                  Load More Reviews
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -715,7 +658,7 @@ const CollegeDetailsPage: React.FC<CollegeDetailsPageProps> = ({
         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
         <div className="relative z-10 max-w-4xl mx-auto px-6">
           <h2 className="text-3xl md:text-5xl font-black text-white mb-8 tracking-tight">
-            Your future at <span className="text-primary-400">Goldenagete</span>{" "}
+            Your future at <span className="text-primary-400">{college?.name}</span>{" "}
             starts today!
           </h2>
           <p className="text-lg text-slate-400 font-medium mb-12 max-w-2xl mx-auto">
